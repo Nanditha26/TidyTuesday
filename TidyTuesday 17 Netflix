@@ -1,3 +1,7 @@
+#TidyTuesday Week 17 
+## 24/04/2021
+##Netflix Crime TV shows
+
 #loading packages
 library(tidyverse)
 library(readr)
