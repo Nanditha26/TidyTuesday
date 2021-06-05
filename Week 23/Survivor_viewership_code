@@ -1,0 +1,49 @@
+##packages
+library(tidyverse)
+library(ggtext)
+library(showtext)
+library(png)
+library(gridGraphics)
+
+##load data
+survivor_summary <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-06-01/summary.csv')
+names(survivor_summary)
+
+##loading fonts
+font_add("Berlin", "BRLNSR.TTF")
+font_add("Candara", "Candara.ttf")
+showtext_auto()
+
+##palm-tree image
+img1 <- readPNG("palm-tree.png")
+g1 <- rasterGrob(img1, interpolate = FALSE)
+
+##graph
+ggplot(data = survivor_summary)+
+  geom_segment(aes(x = season, xend = season, y = viewers_premier, yend = viewers_finale))+
+  geom_point(aes(x = season, y = viewers_premier), color = '#859C3D', size=3.5)+
+  geom_point(aes(x=season, y = viewers_finale), color = '#8D6657', size=3.5)+
+  coord_flip()+
+  labs(x='Season',
+       y = 'Viewers (million)',
+       title = "Viewership during the <span style = 'color: #859C3D;'>Premier</span> and <span style = 'color : #8D6657; '>Finale</span> of Survivor Seasons",
+       caption = "Viz by Nanditha Plakazhi | Source: survivorR by Daniel Oehm | TidyTuesday Week 23")+
+  theme(plot.title = element_markdown(size = 25, family = "Berlin", hjust = 0.5),
+        plot.caption = element_text(size = 8),
+        panel.background = element_rect(fill = "#C2E0DE"),
+        plot.background = element_rect(fill = "#C2E0DE"),
+        panel.grid = element_line(color = "#0090A8"))+
+  annotate(geom = "label", 
+           x = 20, y = 40,
+           label = "Despite being ranked as the best season by viewers,  
+           viewership fell by 9 million between premier and finale  
+           in Season 2",
+           fill = "steelblue", color = "white", size = 4.5, family = "Candara")+
+  annotate(geom = "curve",
+           x = 3, xend=17,
+           y=40, yend = 40, 
+           curvature = 0.3,
+           arrow = arrow(length = unit(0.1, "in")),
+           size = 1.5,
+           color = "steelblue")+
+  annotation_custom(g1, xmin = 20, xmax = 25, ymin = 20, ymax = 35)
