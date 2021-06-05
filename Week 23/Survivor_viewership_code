@@ -32,7 +32,8 @@ ggplot(data = survivor_summary)+
         plot.caption = element_text(size = 8),
         panel.background = element_rect(fill = "#C2E0DE"),
         plot.background = element_rect(fill = "#C2E0DE"),
-        panel.grid = element_line(color = "#0090A8"))+
+        panel.grid = element_line(color = "#0090A8"),
+        plot.margin = margin(1, 0.5, 1, 0.5, "cm"))+
   annotate(geom = "label", 
            x = 20, y = 40,
            label = "Despite being ranked as the best season by viewers,  
