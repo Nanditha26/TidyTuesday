@@ -1,0 +1,64 @@
+#read data
+parks <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-06-22/parks.csv')
+
+#load packages
+library(tidyverse)
+library(gganimate)
+library(gifski)
+library(png)
+library(ggthemes)
+library(showtext)
+
+#wrangling
+table(parks$city) #Washington occurs as Washington DC and Washington D.C.
+
+parks$city <- gsub("Washington, DC", "Washington, D.C.", parks$city) #change Washington DC occurrences to Washington D.C.
+table(parks$city) #check to see if fixed
+
+top_10_pop <- c("New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio",
+                "San Diego", "Dallas", "San Jose") #top 10 populous cities
+
+parks_top_10 <- parks %>% filter(city %in% top_10_pop)
+parks_top_10$city <- factor(parks_top_10$city, levels = c("New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio",
+                                                          "San Diego", "Dallas", "San Jose")) 
+
+levels(parks_top_10$city)
+
+#loading font
+font_add("Candara", "Candara.ttf")
+showtext_auto()
+
+
+#color palette
+
+my_colors = c("#ff0000","#ff8700","#ffb8d1","#e4ff1a","#29bf12",
+              "#d0ffb7","#0aefff","#147df5","#ff206e","#be0aff") 
+              
+              
+#plotting
+
+plot_1 <- ggplot(data = parks_top_10, aes(x=year, y = rank, color = city))+
+  geom_point(size = 3)+
+  geom_line(size = 1)+
+  geom_point(aes(group = seq_along(rank)), size = 3)+
+  scale_y_reverse()+
+  labs(title = "Park Rankings of Top 10 Populous Cities in the US*",
+       subtitle = "*As of June, 2021",
+       caption = "Viz by Nanditha Plakazhi | Source: The Trust for Public Land | TidyTuesday Week 26",
+       color = "City")+
+  theme_solarized_2(light = FALSE)+
+  scale_color_manual(values = my_colors)+
+  theme(axis.text = element_text(color = "#fefae0"),
+        axis.title = element_text(color = "#fefae0"),
+        axis.title.x = element_blank(),
+        legend.title = element_text(family = "Candara", size = 8, color = "#fefae0"),
+        legend.text = element_text(family = "Candara", size = 8, color = "#fefae0"),
+        legend.position = "bottom",
+        legend.spacing.x = unit(0.8, 'cm'),
+        plot.title = element_text(family = "Candara", size = 20, color = "#fefae0", hjust = 0.5),
+        plot.subtitle = element_text(family = "Candara", size = 15, color = "#fefae0", hjust = 0.5))+
+  transition_reveal(year)
+
+animate(plot_1, height=600, width = 700, end_pause = 30)
+
+anim_save("US_parks.gif")
